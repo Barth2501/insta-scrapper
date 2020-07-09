@@ -1,3 +1,6 @@
 [submodule "face_detection"]
 	path = face_detection
 	url = https://github.com/Barth2501/face_detection
+[submodule "gender_reco"]
+	path = gender_reco
+	url = https://github.com/Barth2501/gender_reco
