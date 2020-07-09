@@ -4,3 +4,9 @@
 [submodule "gender_reco"]
 	path = gender_reco
 	url = https://github.com/Barth2501/gender_reco
+[submodule "hat_classifier"]
+	path = hat_classifier
+	url = https://github.com/Barth2501/hat_classifier
+[submodule "model_hair_loss_level"]
+	path = model_hair_loss_level
+	url = https://github.com/Barth2501/hair_loss_level_reco
