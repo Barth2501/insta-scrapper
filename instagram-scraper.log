@@ -1,0 +1,1 @@
+2020-06-07 14:59:52,605 - instagram_scraper.app - WARNING - Retry after exception HTTPError('560 Server Error: - for url: https://www.instagram.com/p/B9KBauNoEJX/?__a=1',) on https://www.instagram.com/p/B9KBauNoEJX/?__a=1
