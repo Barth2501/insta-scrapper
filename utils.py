@@ -7,6 +7,8 @@ from model_hair_loss_level import predict as hair_loss_reco
 # import urllib
 import numpy as np
 from skimage import io
+import tensorflow as tf
+#from numba import cuda
 
 def main(image_url):
     img = io.imread(image_url)
@@ -28,14 +30,18 @@ def main(image_url):
                 is_bald = bald_detector(face)
                 if is_bald:
                     follow=True
+    #device = cuda.get_current_device()
+    #device.reset()
     return follow
 
 def face_detector(image):
     faces = face_detection.predict(image)
+    tf.keras.backend.clear_session()
     return faces
 
 def hat_detector(image):
     res = hat_classifier.predict(image)
+    tf.keras.backend.clear_session()
     print(res)
     if res[0][0]<0.8:
         return True
@@ -45,6 +51,7 @@ def hat_detector(image):
 
 def gender_detector(image):
     res = gender_reco.predict(image)
+    tf.keras.backend.clear_session()
     print(res)
     if res[0][0]>0.2:
         return True
@@ -54,6 +61,7 @@ def gender_detector(image):
 
 def bald_detector(image):
     res = hair_loss_reco.predict(image)
+    tf.keras.backend.clear_session()
     print(res)
     if res[0][0]<0.95:
         return True
