@@ -47,21 +47,26 @@ class InstagramBot():
             print(len(links))
             for i,link in enumerate(links):
                 print(i)
-                # loop*30 sert a ne pas rescrapper tous les profiles vu précédemment, le 30 est a modifer car pas sur que ce soit le nombre exact de 
-                # post qui s'ouvre lors du scroll down
-                if post in link and i>=loop*30:
-                    seen.append(link)
-                    self.browser.get(link)
-                    print('accessing post')
-                    time.sleep(1+random.randint(0,100)/100)
-                    profile_url = self.browser.find_elements_by_tag_name('a')[0].get_attribute('href')
-                    if profile_url not in seen:
-                        seen.append(profile_url)
+                # permet d'eviter les post 'meilleures publications' et permet d'eviter de chercher les a tag du bas de page qui ne sont pas des posts
+                if loop==0 and i>18 and i<len(links)-15:
+                    # loop*30 sert a ne pas rescrapper tous les profiles vu précédemment, le 40 est a modifer car pas sur que ce soit le nombre exact de 
+                    # post qui s'ouvre lors du scroll down
+                    if post in link and link not in seen and i>=loop*40:
+                        seen.append(link)
+                        self.browser.get(link)
+                        print('accessing post')
+                        time.sleep(1+random.randint(0,100)/100)
+                        profile_url = self.browser.find_elements_by_tag_name('a')[0].get_attribute('href')
+                        if profile_url not in seen:
+                            seen.append(profile_url)
                         self.browser.get(profile_url)
                         print('accessing profile')
                         time.sleep(1+random.randint(0,100)/100)
                         image_url=self.browser.find_elements_by_css_selector('div.XjzKX img')[0].get_attribute('src')
-                        profile_username=self.browser.find_elements_by_css_selector('section.zwlfE > div > h2')[0].text
+                        try:
+                            profile_username=self.browser.find_elements_by_css_selector('section.zwlfE > div > h2')[0].text
+                        except:
+                            profile_username=self.browser.find_elements_by_css_selector('section.zwlfE > div > h1')[0].text
                         is_bald = bald_detector(image_url)
                         print(is_bald)
                         if is_bald==True:
@@ -70,10 +75,13 @@ class InstagramBot():
                             df = df.append({'profile_name':profile_username, 'picture':image_url},ignore_index=True)
                             df.to_csv('./output/profile_to_follow.csv', index=False)
                             print(res)
-                        ## try to release memory
-                        gc.collect()
             loop+=1
+            self.browser.get('https://www.instagram.com/explore/tags/{}/'.format(tag))
             scroll_down = "window.scrollTo(0, document.body.scrollHeight);"
-            self.browser.execute_script(scroll_down)
+            for _ in range(loop):
+                self.browser.execute_script(scroll_down)
+                time.sleep(random.randint(2,5)/10)
             time.sleep(1+random.randint(0,200)/100)
         return res
+
+        
