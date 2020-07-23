@@ -46,29 +46,32 @@ class InstagramBot():
             links = [a.get_attribute('href') for a in self.browser.find_elements_by_tag_name('a')]
             print(len(links))
             for i,link in enumerate(links):
+                print(i)
                 # loop*30 sert a ne pas rescrapper tous les profiles vu précédemment, le 30 est a modifer car pas sur que ce soit le nombre exact de 
                 # post qui s'ouvre lors du scroll down
-                if post in link and link not in seen and i>=loop*30:
+                if post in link and i>=loop*30:
                     seen.append(link)
                     self.browser.get(link)
                     print('accessing post')
                     time.sleep(1+random.randint(0,100)/100)
                     profile_url = self.browser.find_elements_by_tag_name('a')[0].get_attribute('href')
-                    self.browser.get(profile_url)
-                    print('accessing profile')
-                    time.sleep(1+random.randint(0,100)/100)
-                    image_url=self.browser.find_elements_by_css_selector('div.XjzKX img')[0].get_attribute('src')
-                    profile_username=self.browser.find_elements_by_css_selector('section.zwlfE > div > h2')[0].text
-                    is_bald = bald_detector(image_url)
-                    print(is_bald)
-                    if is_bald==True:
-                        res['profile'].append(profile_username)
-                        res['picture'].append(image_url)
-                        df = df.append({'profile_name':profile_username, 'picture':image_url},ignore_index=True)
-                        df.to_csv('./output/profile_to_follow.csv', index=False)
-                        print(res)
-                    ## try to release memory
-                    gc.collect()
+                    if profile_url not in seen:
+                        seen.append(profile_url)
+                        self.browser.get(profile_url)
+                        print('accessing profile')
+                        time.sleep(1+random.randint(0,100)/100)
+                        image_url=self.browser.find_elements_by_css_selector('div.XjzKX img')[0].get_attribute('src')
+                        profile_username=self.browser.find_elements_by_css_selector('section.zwlfE > div > h2')[0].text
+                        is_bald = bald_detector(image_url)
+                        print(is_bald)
+                        if is_bald==True:
+                            res['profile'].append(profile_username)
+                            res['picture'].append(image_url)
+                            df = df.append({'profile_name':profile_username, 'picture':image_url},ignore_index=True)
+                            df.to_csv('./output/profile_to_follow.csv', index=False)
+                            print(res)
+                        ## try to release memory
+                        gc.collect()
             loop+=1
             scroll_down = "window.scrollTo(0, document.body.scrollHeight);"
             self.browser.execute_script(scroll_down)
